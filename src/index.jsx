@@ -1,8 +1,8 @@
-import { AddItem, CustomModal, TaskList } from './components/index';
+import { AddItem, CustomModal, TaskList } from './components';
 import React, { useState } from 'react';
 
 import { View } from 'react-native';
-//import { colors } from './components/constants/theme/colors';
+import { colors } from './constants/theme/colors';
 import { styles } from './styles';
 
 const App = () => {

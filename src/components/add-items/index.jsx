@@ -1,7 +1,7 @@
 import { Button, TextInput, View } from 'react-native';
 
 import React from 'react';
-import { styles } from './styles'
+import { styles } from './style'
 
 const AddItem = ({ 
     placeholder, 
