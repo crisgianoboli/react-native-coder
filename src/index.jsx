@@ -1,69 +1,67 @@
-import { AddItem, CustomModal, TaskList } from './components';
-import React, { useState } from 'react';
+import { ActivityIndicator, View } from "react-native";
+import { Game, GameOver, StartGame } from "./screens";
 
-import { View } from 'react-native';
-import { colors } from './constants/theme/colors';
-import { styles } from './styles';
+import { Header } from "./components";
+import { colors } from "./constants";
+import { styles } from "./styles";
+import { useFonts } from "expo-font";
+import { useState } from "react";
 
 const App = () => {
-  const [task, setTask] = useState('');
-  const [tasks, setTasks] = useState([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedTask, setSelectedTask] = useState(null);
+  const [loaded] = useFonts({
+    "Karma-Regular": require("../assets/fonts/Karma-Regular.ttf"),
+    "Karma-Bold": require("../assets/fonts/Karma-Bold.ttf"),
+    "Karma-Medium": require("../assets/fonts/Karma-Medium.ttf"),
+    "Karma-Light": require("../assets/fonts/Karma-Light.ttf"),
+    "Karma-SemiBold": require("../assets/fonts/Karma-SemiBold.ttf"),
+  });
+  const [userNumber, setUserNumber] = useState(null);
+  const [guessRounds, setGuessRounds] = useState(0);
+  const onHandleStarGame = (selectedNumber) => {
+    setUserNumber(selectedNumber);
+  };
 
-  const onHandlerChange = (text) => {
-    setTask(text)
-  }
+  const onHandleGameOver = (rounds) => {
+    setGuessRounds(rounds);
+  };
 
-  const onHandlerSubmit = () => {
-    setTasks([
-      ...tasks,
-      {
-        id: Math.random().toString(),
-        value: task
-      }
-    ]);
-    setTask('');
-  }
+  const onHandleRestartGame = () => {
+    setUserNumber(null);
+    setGuessRounds(0);
+  };
 
-  const onHandlerModal = (item) => {
-    setIsModalVisible(!isModalVisible)
-    setSelectedTask(item);
-  }
-  
-  const onHandleCancel = () => {
-    setIsModalVisible(!isModalVisible);
-    setSelectedTask(null);
-  }
+  const Content = () => {
+    if (userNumber && guessRounds <= 0) {
+      return <Game selectedNumber={userNumber} onHandleGameOver={onHandleGameOver} />;
+    }
 
-  const onHandleDelete = () => {
-    setTasks((prevTaskList) => prevTaskList.filter((task) => task.id !== selectedTask.id));
-    setIsModalVisible(!isModalVisible);
+    if (guessRounds > 0) {
+      return (
+        <GameOver
+          onHandleRestartGame={onHandleRestartGame}
+          rounds={guessRounds}
+          selectedNumber={userNumber}
+        />
+      );
+    }
+
+    return <StartGame onHandleStarGame={onHandleStarGame} />;
+  };
+
+  if (!loaded) {
+    return (
+      <View style={styles.containerLoader}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
   }
 
   return (
     <View style={styles.container}>
-      <AddItem 
-        buttonColor={colors.primary}
-        buttonText='Add'
-        onHandlerChange={onHandlerChange}
-        onHandlerSubmit={onHandlerSubmit}
-        placeholder='add a new task'
-        task={task}
-      />
-      <TaskList 
-        tasks={tasks}
-        onHandlerModal={onHandlerModal}
-      />
-     <CustomModal 
-        isModalVisible={isModalVisible}
-        onHandleCancel={onHandleCancel}
-        onHandleDelete={onHandleDelete}
-        selectedTask={selectedTask}
-     />
+      <Header title="Adivina el numero" />
+      <Content />
     </View>
   );
-}
-
+};
 
 export default App;
